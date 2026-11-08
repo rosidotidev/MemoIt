@@ -1,0 +1,81 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    function str(v, min, max) {
+      return v is string && v.size() >= min && v.size() <= max;
+    }
+
+    function createdAtOk() {
+      return request.resource.data.createdAt is timestamp
+        && (resource == null || request.resource.data.createdAt == resource.data.createdAt);
+    }
+
+    function validCategory() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['name', 'stateLabel', 'reportable', 'createdAt', 'updatedAt'])
+        && d.keys().hasAll(['name', 'stateLabel', 'reportable', 'createdAt', 'updatedAt'])
+        && str(d.name, 1, 60)
+        && str(d.stateLabel, 1, 16)
+        && d.reportable is bool
+        && createdAtOk()
+        && d.updatedAt == request.time;
+    }
+
+    function validItem(uid) {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['categoryId', 'title', 'description', 'done', 'deadline',
+                               'priority', 'value', 'createdAt', 'updatedAt'])
+        && d.keys().hasAll(['categoryId', 'title', 'done', 'priority', 'createdAt', 'updatedAt'])
+        && str(d.title, 1, 120)
+        && (!('description' in d) || str(d.description, 0, 4000))
+        && d.done is bool
+        && d.priority in ['low', 'medium', 'high']
+        && (!('deadline' in d) || d.deadline is timestamp)
+        && (!('value' in d) || (d.value is number && d.value > -1000000000000 && d.value < 1000000000000))
+        && d.categoryId is string
+        && exists(/databases/$(database)/documents/users/$(uid)/categories/$(d.categoryId))
+        && createdAtOk()
+        && d.updatedAt == request.time;
+    }
+
+    function validPreferences() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['accent', 'hue', 'chroma', 'scheme', 'language', 'updatedAt'])
+        && d.keys().hasAll(['accent', 'scheme', 'language'])
+        && d.accent is string && d.accent.size() >= 1 && d.accent.size() <= 32
+        && (d.accent != 'custom'
+            || (d.keys().hasAll(['hue', 'chroma'])
+                && d.hue is number && d.hue >= 0 && d.hue <= 360
+                && d.chroma is number && d.chroma >= 0 && d.chroma <= 0.3))
+        && (d.accent == 'custom' || !(d.keys().hasAny(['hue', 'chroma'])))
+        && d.scheme in ['light', 'dark', 'system']
+        && d.language in ['it', 'en']
+        && (!('updatedAt' in d) || d.updatedAt == request.time);
+    }
+
+    match /users/{uid}/categories/{categoryId} {
+      allow read, delete: if isOwner(uid);
+      allow create, update: if isOwner(uid) && validCategory();
+    }
+
+    match /users/{uid}/items/{itemId} {
+      allow read, delete: if isOwner(uid);
+      allow create, update: if isOwner(uid) && validItem(uid);
+    }
+
+    match /users/{uid}/preferences/app {
+      allow read, delete: if isOwner(uid);
+      allow create, update: if isOwner(uid) && validPreferences();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

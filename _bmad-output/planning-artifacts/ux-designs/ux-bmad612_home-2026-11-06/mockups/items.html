@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>MemoIt — Items</title>
+<link rel="stylesheet" href="assets/m3.css">
+<script src="assets/app.js"></script>
+</head>
+<body data-nav="categories">
+<div class="shell">
+  <nav id="rail"></nav>
+  <main class="shell__main">
+    <div class="split">
+      <aside class="split__pane" aria-label="Categories">
+        <ul class="list" id="pane"></ul>
+      </aside>
+      <div class="shell__content">
+        <header class="appbar" style="margin:0 calc(var(--s4) * -1)">
+          <div class="appbar__row">
+            <a class="icon-btn only-compact" href="categories.html" aria-label="Back to categories"><script>document.write(MemoIt.icon('back'))</script></a>
+            <h1 class="appbar__title" id="title">Grocery list</h1>
+            <button class="icon-btn" type="button" aria-label="Sort" onclick="MemoIt.openDialog('sort')"><script>document.write(MemoIt.icon('sort'))</script></button>
+            <a class="icon-btn" id="manage" href="category-settings.html" aria-label="Category settings"><script>document.write(MemoIt.icon('more'))</script></a>
+          </div>
+        </header>
+
+        <section class="head-card" aria-label="Category summary">
+          <div class="ring" id="ring"><b id="ring-n">0%</b></div>
+          <div class="head-card__body">
+            <h2 id="h-title">Grocery list</h2>
+            <p class="body-md muted" style="margin:2px 0 8px" id="h-sub"></p>
+            <div class="chips" style="margin:0" id="h-chips"></div>
+          </div>
+        </section>
+
+        <label class="search" style="margin-top:12px">
+          <script>document.write('<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>')</script>
+          <input id="q" type="search" placeholder="Search in this category" aria-label="Search in this category" autocomplete="off">
+        </label>
+        <div class="fchips" role="group" aria-label="Filter items" id="filters">
+          <button class="fchip" type="button" data-f="all" aria-pressed="true">All</button>
+          <button class="fchip" type="button" data-f="late" aria-pressed="false">Overdue</button>
+          <button class="fchip" type="button" data-f="high" aria-pressed="false">High priority</button>
+          <button class="fchip" type="button" data-f="due" aria-pressed="false">Has deadline</button>
+        </div>
+
+        <h2 class="label-lg section-label" id="open-h" style="padding-top:8px">Open · <span id="open-n">0</span></h2>
+        <ul class="list" id="open" aria-labelledby="open-h"></ul>
+        <div class="empty" id="none" hidden style="padding:32px 16px">
+          <h2 style="font-size:20px">No items match</h2>
+          <p style="margin:0">Try another filter or clear the search.</p>
+        </div>
+        <h2 class="label-lg section-label" id="done-h" style="color:var(--on-surface-variant)">Done · <span id="done-n">0</span></h2>
+        <ul class="list" id="done" aria-labelledby="done-h"></ul>
+      </div>
+    </div>
+  </main>
+</div>
+
+<a class="fab" id="add" href="item-edit.html?new=1"><script>document.write(MemoIt.icon('add'))</script>Add item</a>
+<nav id="navbar"></nav>
+
+<dialog id="sort" class="sheet" aria-labelledby="sort-t">
+  <div class="sheet__handle"></div>
+  <h2 id="sort-t">Sort by</h2>
+  <button class="row row--link" type="button" data-sort="manual"><span class="tick"></span><span class="row__body">Newest first</span></button>
+  <button class="row row--link" type="button" data-sort="priority"><span class="tick"></span><span class="row__body">Priority</span></button>
+  <button class="row row--link" type="button" data-sort="deadline"><span class="tick"></span><span class="row__body">Deadline</span></button>
+</dialog>
+<div class="snackbar" id="snackbar" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  var cid = q.get('c') || 'grocery';
+  var cat = MemoIt.CATEGORIES.find(function (c) { return c.id === cid; }) || MemoIt.CATEGORIES[0];
+  document.getElementById('title').textContent = cat.name;
+  document.getElementById('h-title').textContent = cat.name;
+  document.getElementById('manage').href = 'category-settings.html?c=' + cat.id;
+  document.getElementById('add').href = 'item-edit.html?new=1&c=' + cat.id;
+  document.getElementById('pane').innerHTML = MemoIt.categoryRows(cat.id);
+  document.title = 'MemoIt — ' + cat.name;
+
+  var DATA = {
+    grocery: [
+      { t: 'Oat milk', s: '2 cartons', p: 'M' }, { t: 'Tomatoes', s: 'San Marzano if they have them', p: 'M' },
+      { t: 'Pasta', s: '', p: 'L' }, { t: 'Birthday candles', s: 'Today before 18:00', p: 'H', due: 'Today · 18:00', late: true },
+      { t: 'Parmesan', s: '', p: 'M' }, { t: 'Dishwasher tablets', s: '', p: 'L' },
+      { t: 'Basil', s: '', p: 'M', done: true }, { t: 'Coffee beans', s: '', p: 'M', done: true }
+    ],
+    books: [
+      { t: 'Designing Data-Intensive Applications', s: 'Kleppmann', p: 'H', due: 'Fri' },
+      { t: 'The Pragmatic Programmer', s: '', p: 'M' }, { t: 'Refactoring UI', s: '', p: 'M' },
+      { t: 'Dune', s: 'Paperback edition', p: 'L', done: true }
+    ],
+    car: [
+      { t: 'Renew car insurance', s: 'Compare 3 quotes', p: 'H', due: 'Mon · 09:00', late: true },
+      { t: 'Winter tyres', s: '', p: 'M', due: '30 Nov' }, { t: 'Fix kitchen tap', s: '', p: 'L' }
+    ],
+    weight: [{ t: '74.2 kg', s: 'This morning', p: 'M', done: true }, { t: '74.6 kg', s: 'Last week', p: 'M', done: true }],
+    reading: [{ t: 'Thinking, Fast and Slow', s: '', p: 'M' }, { t: 'Atomic Habits', s: '', p: 'L' }, { t: 'The Mythical Man-Month', s: '', p: 'M', done: true }]
+  };
+  var items = (DATA[cat.id] || []).map(function (x, i) { x.i = i; return x; });
+  var sortBy = 'manual', filter = 'all', text = '';
+  var RANK = { H: 0, M: 1, L: 2 };
+
+  function row(it) {
+    var chips = '';
+    if (it.due) chips += '<span class="chip ' + (it.late && !it.done ? 'chip--overdue' : '') + '">' + MemoIt.icon('clock') + (it.late && !it.done ? 'Overdue · ' : '') + it.due + '</span>';
+    if (it.p === 'H') chips += '<span class="chip chip--high">' + MemoIt.icon('flag') + 'High</span>';
+    return '<li class="row item' + (it.done ? ' is-done' : '') + '" data-i="' + it.i + '">' +
+      '<button class="tap" type="button" aria-label="' + (it.done ? 'Mark as open: ' : 'Mark as ' + cat.state.toLowerCase() + ': ') + it.t + '" aria-pressed="' + !!it.done + '"></button>' +
+      '<span class="check">' + MemoIt.icon('check') + '</span>' +
+      '<span class="row__body"><span class="row__title title-md">' + it.t + '</span>' +
+      (it.s ? '<br><span class="row__sub">' + it.s + '</span>' : '') +
+      (chips ? '<span class="chips">' + chips + '</span>' : '') + '</span>' +
+      '<span class="row__trail"><a class="icon-btn" href="item-edit.html?c=' + cat.id + '&i=' + it.i + '" aria-label="Edit ' + it.t + '">' + MemoIt.icon('edit') + '</a></span></li>';
+  }
+  function match(it) {
+    if (text && (it.t + ' ' + it.s).toLowerCase().indexOf(text) < 0) return false;
+    if (filter === 'late') return !!it.late;
+    if (filter === 'high') return it.p === 'H';
+    if (filter === 'due') return !!it.due;
+    return true;
+  }
+  function summary() {
+    var done = items.filter(function (x) { return x.done; }).length, total = items.length, open = total - done;
+    var late = items.filter(function (x) { return x.late && !x.done; }).length;
+    var pct = total ? Math.round(done / total * 100) : 0;
+    document.getElementById('ring').style.setProperty('--p', pct);
+    document.getElementById('ring-n').textContent = pct + '%';
+    document.getElementById('h-sub').textContent = open + ' open · ' + done + ' ' + cat.state.toLowerCase() + ' · ' + total + ' in total';
+    document.getElementById('h-chips').innerHTML = late ? '<span class="chip chip--overdue">' + MemoIt.icon('clock') + late + ' overdue</span>' : '<span class="chip chip--sel">' + MemoIt.icon('check') + 'All on track</span>';
+  }
+  function render() {
+    var all = items.filter(match);
+    var o = all.filter(function (x) { return !x.done; }), d = all.filter(function (x) { return x.done; });
+    if (sortBy === 'priority') o.sort(function (a, b) { return RANK[a.p] - RANK[b.p] || a.i - b.i; });
+    if (sortBy === 'deadline') o.sort(function (a, b) { return (b.due ? 1 : 0) - (a.due ? 1 : 0) || a.i - b.i; });
+    document.getElementById('open').innerHTML = o.map(row).join('');
+    document.getElementById('done').innerHTML = d.map(row).join('');
+    document.getElementById('open-n').textContent = o.length;
+    document.getElementById('done-n').textContent = d.length;
+    document.getElementById('open-h').hidden = !o.length && !!all.length;
+    document.getElementById('done-h').hidden = !d.length;
+    document.getElementById('none').hidden = all.length > 0;
+    document.querySelectorAll('[data-sort]').forEach(function (b) {
+      b.querySelector('.tick').innerHTML = b.dataset.sort === sortBy ? MemoIt.icon('check') : '';
+    });
+    summary();
+  }
+  document.addEventListener('click', function (e) {
+    var tap = e.target.closest('.item .tap');
+    if (tap) {
+      var it = items[+tap.parentNode.dataset.i];
+      it.done = !it.done; render();
+      MemoIt.snack(it.done ? '“' + it.t + '” marked ' + cat.state.toLowerCase() : '“' + it.t + '” reopened', 'Undo', function () { it.done = !it.done; render(); });
+    }
+    var s = e.target.closest('[data-sort]');
+    if (s) { sortBy = s.dataset.sort; render(); MemoIt.closeDialog(s); }
+    var f = e.target.closest('.fchip');
+    if (f) {
+      filter = f.dataset.f;
+      document.querySelectorAll('.fchip').forEach(function (x) { x.setAttribute('aria-pressed', x === f); });
+      render();
+    }
+  });
+  document.getElementById('q').addEventListener('input', function () { text = this.value.trim().toLowerCase(); render(); });
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<div class="auth2">
+  <aside class="auth2__hero" aria-hidden="true">
+    <div class="brand-mark hero-mark">{{ strings().brandMark }}</div>
+    <h2>{{ strings().login.heroTitle }}</h2>
+    <p>{{ strings().login.heroBody }}</p>
+    <ul class="auth2__feat">
+      <li><span><memo-icon name="check" /></span>{{ strings().login.features[0] }}</li>
+      <li><span><memo-icon name="chart" /></span>{{ strings().login.features[1] }}</li>
+      <li><span><memo-icon name="palette" /></span>{{ strings().login.features[2] }}</li>
+    </ul>
+  </aside>
+
+  <main class="auth2__form">
+    <form class="auth__card" (submit)="submit($event, email.value, pwd.value)" autocomplete="on">
+      <div class="auth2__top">
+        <div class="brand-mark" aria-hidden="true">{{ strings().brandMark }}</div>
+        <h1 class="headline">{{ strings().appName }}</h1>
+        <p class="body-md">{{ strings().tagline }}</p>
+      </div>
+
+      <h1 class="headline welcome">{{ strings().login.welcome }}</h1>
+      <p class="muted body-md sub">{{ strings().login.subtitle }}</p>
+
+      <div class="field">
+        <label for="email">{{ strings().login.email }}</label>
+        <input #email id="email" name="email" type="email" inputmode="email" autocomplete="username" required />
+      </div>
+      <div class="field">
+        <label for="pwd">{{ strings().login.password }}</label>
+        <input
+          #pwd
+          id="pwd"
+          name="pwd"
+          [type]="showPassword() ? 'text' : 'password'"
+          autocomplete="current-password"
+          required
+        />
+        <button type="button" class="btn btn--text text-btn" aria-controls="pwd" (click)="toggleShow()">
+          {{ showPassword() ? strings().login.hide : strings().login.show }}
+        </button>
+      </div>
+
+      <div class="error-slot">
+        @if (error(); as code) {
+          <p class="error" role="alert">{{ strings().authErrors[code] }}</p>
+        }
+      </div>
+
+      <button class="btn btn--filled btn--block" type="submit" [disabled]="busy()">
+        {{ busy() ? strings().login.submitting : strings().login.submit }}
+      </button>
+
+      <hr class="divider" />
+      <p class="muted label-md note">{{ strings().login.ownerNote }}</p>
+      <div class="segmented lang" role="radiogroup" [attr.aria-label]="strings().settings.languageLabel">
+        <button type="button" role="radio" [attr.aria-checked]="language() === 'en'" (click)="setLanguage('en')">
+          {{ strings().settings.english }}
+        </button>
+        <button type="button" role="radio" [attr.aria-checked]="language() === 'it'" (click)="setLanguage('it')">
+          {{ strings().settings.italian }}
+        </button>
+      </div>
+    </form>
+  </main>
+</div>

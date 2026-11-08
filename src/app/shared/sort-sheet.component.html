@@ -1,0 +1,16 @@
+<button type="button" class="scrim" tabindex="-1" [attr.aria-label]="closeLabel()" (click)="closed.emit()"></button>
+<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sort-sheet-title" (keydown)="onKeydown($event)">
+  <div class="sheet__handle"></div>
+  <h2 id="sort-sheet-title" class="heading">{{ heading() }}</h2>
+  <ul class="options">
+    @for (o of options(); track o.value) {
+      <li>
+        <button type="button" class="row row--link option" [attr.aria-pressed]="o.value === selected()" (click)="chosen.emit(o.value)">
+          <span class="tick">@if (o.value === selected()) {<memo-icon name="check" />}</span>
+          <span class="row__body">{{ o.label }}</span>
+        </button>
+      </li>
+    }
+  </ul>
+  <button type="button" class="btn btn--text close" (click)="closed.emit()">{{ closeLabel() }}</button>
+</div>

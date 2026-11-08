@@ -1,0 +1,31 @@
+<memo-item-form
+  [heading]="strings().itemForm.title"
+  [title]="draft().title"
+  [description]="draft().description"
+  [priority]="draft().priority"
+  [deadline]="draft().deadline"
+  [showValue]="reportable()"
+  [value]="draft().value"
+  [error]="error()"
+  [busy]="busy()"
+  (titleChange)="onTitle($event)"
+  (descriptionChange)="onDescription($event)"
+  (priorityChange)="onPriority($event)"
+  (deadlineChange)="onDeadline($event)"
+  (valueChange)="onValue($event)"
+  (saved)="save()"
+  (cancelled)="cancel()"
+>
+  <section class="panel" aria-labelledby="item-category-title">
+    <h3 id="item-category-title">{{ strings().itemForm.categoryLabel }}</h3>
+    <div class="field">
+      <label for="item-category">{{ strings().itemForm.categoryLabel }}</label>
+      <input id="item-category" readonly [value]="categoryName()" />
+    </div>
+    <hr class="divider" />
+    <dl class="kv">
+      <dt>{{ strings().itemForm.createdLabel }}</dt>
+      <dd>{{ strings().itemForm.createdNow }}</dd>
+    </dl>
+  </section>
+</memo-item-form>

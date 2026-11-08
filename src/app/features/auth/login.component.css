@@ -1,0 +1,15 @@
+:host { display: block; }
+.hero-mark { background: color-mix(in srgb, var(--on-primary) 20%, transparent); color: var(--on-primary); margin-bottom: 32px; width: 56px; height: 56px; font-size: 28px; }
+.auth__card { padding: 0; background: none; }
+.auth2__top .headline { margin: 0 0 4px; }
+.auth2__top p { margin: 0; opacity: .85; }
+.welcome { margin: 0 0 4px; }
+.sub { margin: 0 0 28px; }
+.text-btn { position: absolute; right: 4px; top: 8px; }
+.field input { padding-right: 84px; }
+.error-slot { min-height: 24px; margin-bottom: 8px; }
+.error { margin: 0; color: var(--error); font-size: 14px; line-height: 20px; }
+.btn:disabled { opacity: 0.38; cursor: default; }
+.divider { margin: 28px 0 16px; }
+.note { text-align: center; margin: 0 0 16px; }
+.lang { max-width: 240px; margin: 0 auto; }

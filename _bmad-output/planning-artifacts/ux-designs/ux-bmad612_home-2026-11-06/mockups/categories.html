@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>MemoIt — Categories</title>
+<link rel="stylesheet" href="assets/m3.css">
+<script src="assets/app.js"></script>
+</head>
+<body data-nav="categories">
+<div class="shell">
+  <nav id="rail"></nav>
+  <main class="shell__main">
+    <header class="appbar">
+      <div class="appbar__row">
+        <h1 class="appbar__title">MemoIt</h1>
+        <a class="icon-btn" href="settings.html" aria-label="Theme and settings"><script>document.write(MemoIt.icon('palette'))</script></a>
+      </div>
+    </header>
+
+    <div class="shell__content shell__content--wide">
+      <div id="full">
+        <div style="padding:8px 4px 16px">
+          <p class="body-md muted" style="margin:0">Thursday, 6 November</p>
+          <h2 class="headline" style="margin:0">Good evening, Bob</h2>
+        </div>
+
+        <label class="search">
+          <script>document.write('<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>')</script>
+          <input id="q" type="search" placeholder="Search categories and items" aria-label="Search categories and items" autocomplete="off">
+        </label>
+
+        <section class="hero" aria-label="Today at a glance">
+          <div class="hero__eyebrow">Needs your attention</div>
+          <div class="hero__big"><b>2</b><span class="title-lg">items overdue</span></div>
+          <div class="hero__stats">
+            <div class="hero__stat"><b>14</b><span>Open</span></div>
+            <div class="hero__stat"><b>3</b><span>This week</span></div>
+            <div class="hero__stat"><b>5</b><span>Categories</span></div>
+          </div>
+        </section>
+
+        <div class="sec-h"><h2>Due soon</h2><a class="btn btn--text" href="items.html?c=car">See overdue</a></div>
+        <div class="hscroll" id="due"></div>
+
+        <div class="sec-h"><h2>Your categories</h2><span class="label-lg muted" id="count"></span></div>
+        <ul class="cards" id="cats" aria-label="Your categories"></ul>
+        <div class="empty" id="nomatch" hidden style="padding:32px 16px"><h2 style="font-size:20px">No category matches</h2><p style="margin:0">Check the spelling or clear the search.</p></div>
+      </div>
+
+      <!-- Empty state (first login of a new user): categories.html?empty=1 -->
+      <div class="empty" id="empty" hidden>
+        <div class="empty__art"><script>document.write(MemoIt.icon('folder'))</script></div>
+        <h2>Nothing here yet</h2>
+        <p style="margin:0 0 24px">Create your first category, like “Grocery list” or “Books to buy”.</p>
+        <button class="btn btn--filled" type="button" onclick="MemoIt.openDialog('new-cat')">New category</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<button class="fab" id="fab" type="button" onclick="MemoIt.openDialog('new-cat')"><script>document.write(MemoIt.icon('add'))</script>New category</button>
+<nav id="navbar"></nav>
+
+<dialog id="new-cat" aria-labelledby="nc-t">
+  <form method="dialog">
+    <h2 id="nc-t">New category</h2>
+    <div class="field" style="margin-top:8px">
+      <label for="nc-name">Name</label>
+      <input id="nc-name" placeholder="e.g. Movies to watch" autocomplete="off">
+      <div class="support">You can rename it later.</div>
+    </div>
+    <div class="actions">
+      <button class="btn btn--text" value="cancel">Cancel</button>
+      <button class="btn btn--text" value="ok" onclick="MemoIt.snack('Category created')">Create</button>
+    </div>
+  </form>
+</dialog>
+<div class="snackbar" id="snackbar" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  if (q.get('empty')) {
+    document.getElementById('full').hidden = true;
+    document.getElementById('empty').hidden = false;
+    document.getElementById('fab').hidden = true;
+    return;
+  }
+  document.getElementById('due').innerHTML = MemoIt.DUE_SOON.map(function (d) {
+    return '<a class="due-card" href="items.html?c=' + d.cat + '">' +
+      '<span class="chips" style="margin:0"><span class="chip ' + (d.late ? 'chip--overdue' : '') + '">' + MemoIt.icon('clock') + (d.late ? 'Overdue · ' : '') + d.when + '</span>' +
+      (d.p === 'H' ? '<span class="chip chip--high">' + MemoIt.icon('flag') + 'High</span>' : '') + '</span>' +
+      '<span class="t title-md">' + d.t + '</span><span class="cn">' + d.cn + '</span></a>';
+  }).join('');
+
+  function cards(text) {
+    var list = MemoIt.CATEGORIES.filter(function (c) { return !text || c.name.toLowerCase().indexOf(text) >= 0; });
+    document.getElementById('cats').innerHTML = list.map(function (c) {
+      var done = c.total - c.open, pct = c.total ? Math.round(done / c.total * 100) : 0;
+      return '<li><a class="cat-card" href="items.html?c=' + c.id + '">' +
+        '<span class="cat-card__top"><span class="avatar">' + c.initial + '</span>' +
+        '<span class="row__body"><span class="title-md" style="display:block">' + c.name + '</span>' +
+        '<span class="row__sub">' + (c.open ? c.open + ' open' : 'All ' + c.state.toLowerCase()) + (c.next ? ' · next ' + c.next : '') + (c.reportable ? ' · Report' : '') + '</span></span>' +
+        (c.open ? '<span class="badge">' + c.open + '</span>' : '') + '</span>' +
+        '<span class="progress" role="progressbar" aria-valuenow="' + pct + '" aria-valuemin="0" aria-valuemax="100" aria-label="' + c.name + ' progress"><i style="width:' + pct + '%"></i></span>' +
+        '<span class="cat-card__meta"><span>' + done + ' of ' + c.total + ' ' + c.state.toLowerCase() + '</span>' +
+        (c.late ? '<span class="chip chip--overdue" style="height:22px">Overdue</span>' : '<span>' + pct + '%</span>') + '</span></a></li>';
+    }).join('');
+    document.getElementById('count').textContent = list.length + (list.length === 1 ? ' category' : ' categories');
+    document.getElementById('nomatch').hidden = list.length > 0;
+  }
+  document.getElementById('q').addEventListener('input', function () { cards(this.value.trim().toLowerCase()); });
+  cards('');
+})();
+</script>
+</body>
+</html>

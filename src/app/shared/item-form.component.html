@@ -1,0 +1,177 @@
+<form class="form shell__content shell__content--wide" (submit)="submit($event)" novalidate>
+  <header class="appbar">
+    <div class="appbar__row">
+      <button type="button" class="icon-btn" [attr.aria-label]="strings().itemForm.cancel" [disabled]="busy()" (click)="cancelled.emit()">
+        <memo-icon name="close" />
+      </button>
+      <h1 class="appbar__title">{{ heading() }}</h1>
+      <button type="submit" class="btn btn--filled save" [disabled]="busy()">
+        {{ busy() ? strings().itemForm.saving : strings().itemForm.save }}
+      </button>
+      <memo-account-menu />
+    </div>
+  </header>
+
+  <div class="cols cols--2 body">
+    <div>
+      <section class="panel" aria-labelledby="item-details-title">
+        <h3 id="item-details-title">{{ strings().itemForm.detailsLabel }}</h3>
+        <div class="field">
+          <label for="item-title">{{ strings().itemForm.titleLabel }}</label>
+          <input
+            id="item-title"
+            type="text"
+            autocomplete="off"
+            [attr.maxlength]="titleMax"
+            [value]="title()"
+            [attr.aria-invalid]="titleError() ? 'true' : null"
+            [attr.aria-describedby]="titleError() ? 'item-title-error' : null"
+            (input)="onTitle($event)"
+          />
+          <div id="item-title-error" class="support error" role="alert">
+            @if (titleError(); as e) {
+              {{ strings().itemForm.errors[e] }}
+            }
+          </div>
+        </div>
+        <div class="field last">
+          <label for="item-description">{{ strings().itemForm.descriptionLabel }}</label>
+          <textarea
+            id="item-description"
+            [value]="description()"
+            [attr.aria-invalid]="descriptionError() ? 'true' : null"
+            [attr.aria-describedby]="descriptionError() ? 'item-description-error' : null"
+            (input)="onDescription($event)"
+          ></textarea>
+          <div id="item-description-error" class="support error" role="alert">
+            @if (descriptionError(); as e) {
+              {{ strings().itemForm.errors[e] }}
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="item-priority-label">
+        <h3 id="item-priority-label">{{ strings().itemForm.priorityLabel }}</h3>
+        <div class="tiles" role="group" [attr.aria-label]="strings().itemForm.priorityLabel">
+          @for (p of priorities(); track p.value) {
+            <button
+              type="button"
+              class="tile"
+              [attr.data-v]="p.key"
+              [attr.aria-pressed]="priority() === p.value"
+              [attr.aria-checked]="priority() === p.value"
+              [disabled]="busy()"
+              (click)="priorityChange.emit(p.value)"
+            >
+              <memo-icon name="flag" />{{ p.label }}
+            </button>
+          }
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="item-deadline-label">
+        <h3 id="item-deadline-label">{{ strings().itemForm.deadlineLabel }}</h3>
+        <div class="quick" role="group" [attr.aria-label]="strings().itemForm.deadlineLabel">
+          @for (q of quicks(); track q.value) {
+            <button
+              type="button"
+              class="fchip"
+              [attr.aria-pressed]="activeQuick() === q.value"
+              [disabled]="busy()"
+              (click)="pickQuick(q.value)"
+            >
+              {{ q.label }}
+            </button>
+          }
+          <button
+            type="button"
+            class="fchip"
+            [attr.aria-pressed]="deadline() === null"
+            [disabled]="busy()"
+            (click)="deadlineChange.emit(null)"
+          >
+            {{ strings().itemForm.deadlineNone }}
+          </button>
+        </div>
+        <div class="when">
+          <div class="field">
+            <label for="item-deadline-date">{{ strings().itemForm.dateLabel }}</label>
+            <input id="item-deadline-date" type="date" [value]="dateInput()" [disabled]="busy()" (change)="onDate($event)" />
+          </div>
+          <div class="field">
+            <label for="item-deadline-time">{{ strings().itemForm.timeLabel }}</label>
+            <input
+              id="item-deadline-time"
+              type="time"
+              [value]="timeInput()"
+              [disabled]="busy() || deadline() === null"
+              (change)="onTime($event)"
+            />
+          </div>
+        </div>
+      </section>
+
+      @if (showValue()) {
+        <section class="panel" aria-labelledby="item-value-title">
+          <h3 id="item-value-title">{{ strings().itemForm.valueLabel }}</h3>
+          <div class="field last">
+            <label for="item-value">{{ strings().itemForm.valueNumber }}</label>
+            <input
+              id="item-value"
+              type="text"
+              inputmode="decimal"
+              autocomplete="off"
+              [value]="value()"
+              [disabled]="busy()"
+              [attr.aria-invalid]="valueError() ? 'true' : null"
+              [attr.aria-describedby]="valueError() ? 'item-value-error' : null"
+              (input)="onValue($event)"
+            />
+            <div id="item-value-error" class="support error" role="alert">
+              @if (valueError(); as e) {
+                {{ strings().itemForm.errors[e] }}
+              }
+            </div>
+          </div>
+        </section>
+      }
+
+      <p class="error form-error" role="alert">
+        @if (formError(); as e) {
+          {{ strings().itemForm.errors[e] }}
+        }
+      </p>
+    </div>
+
+    <aside class="sticky">
+      <section class="panel" aria-labelledby="item-preview-title">
+        <h3 id="item-preview-title" class="preview-caption">{{ strings().itemForm.previewLabel }}</h3>
+        <div class="card card--elevated pv">
+          @if (previewTitle() === '') {
+            <p class="preview-empty muted">{{ strings().itemForm.previewEmpty }}</p>
+          } @else {
+            <div class="row item pv-row">
+              <span class="check"></span>
+              <span class="row__body">
+                <span class="row__title title-md preview-title">{{ previewTitle() }}</span>
+                @if (previewDescription() !== '') {
+                  <br /><span class="row__sub preview-description">{{ previewDescription() }}</span>
+                }
+                <span class="chips preview-chips">
+                  @if (deadline() !== null) {
+                    <span class="chip preview-chip"><memo-icon name="clock" />{{ deadlineText() }}</span>
+                  }
+                  @if (priority() === 'high') {
+                    <span class="chip chip--high preview-chip high"><memo-icon name="flag" />{{ strings().category.highChip }}</span>
+                  }
+                </span>
+              </span>
+            </div>
+          }
+        </div>
+      </section>
+      <ng-content />
+    </aside>
+  </div>
+</form>

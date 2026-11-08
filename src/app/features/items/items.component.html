@@ -1,0 +1,237 @@
+<div class="split">
+  @if (twoPane()) {
+    <aside class="split__pane" [attr.aria-label]="strings().category.paneLabel">
+      <ul class="list pane-list">
+        @for (c of categories(); track c.id) {
+          <li>
+            <a
+              class="row row--link pane-link"
+              [class.selected]="c.id === category()?.id"
+              [routerLink]="['/c', c.id]"
+              [attr.aria-current]="c.id === category()?.id ? 'page' : null"
+            >
+              <span class="avatar">{{ initial(c.name) }}</span>
+              <span class="row__body"><span class="row__title title-md">{{ c.name }}</span><br /><span class="row__sub">{{ paneSub(c) }}</span></span>
+              <span class="row__trail">
+                @if (openCount(c.id) > 0) {
+                  <span class="badge">{{ openCount(c.id) }}</span>
+                }
+                <memo-icon name="chev" />
+              </span>
+            </a>
+          </li>
+        }
+      </ul>
+    </aside>
+  }
+  <div class="shell__content">
+    <header class="appbar appbar--flush">
+      <div class="appbar__row">
+        @if (!twoPane()) {
+          <a class="icon-btn back" routerLink="/categories" [attr.aria-label]="strings().category.back"><memo-icon name="back" /></a>
+        }
+        <h1 class="appbar__title name">{{ category()?.name }}</h1>
+        @if (itemStatus() !== 'loading' && itemStatus() !== 'error' && counts().total > 0) {
+          <button
+            type="button"
+            class="icon-btn sort-button"
+            [attr.aria-label]="strings().category.sortLabel"
+            aria-haspopup="dialog"
+            (click)="sortOpen.set(true)"
+          >
+            <memo-icon name="sort" />
+          </button>
+        }
+        <div class="menu-wrap">
+          <button
+            #menuButton
+            type="button"
+            class="icon-btn menu-button"
+            [attr.aria-label]="strings().category.menuLabel"
+            [attr.aria-expanded]="menuOpen()"
+            [attr.aria-controls]="menuOpen() ? 'category-menu' : null"
+            (click)="toggleMenu()"
+          >
+            <memo-icon name="more" />
+          </button>
+          @if (menuOpen()) {
+            <div id="category-menu" class="menu" role="group" [attr.aria-label]="strings().category.menuLabel">
+              @if (category(); as c) {
+                <a class="entry" [routerLink]="['/c', c.id, 'settings']" (click)="closeMenu()">{{
+                  strings().category.settingsItem
+                }}</a>
+              }
+            </div>
+          }
+        </div>
+        <memo-account-menu />
+      </div>
+    </header>
+    @switch (itemStatus()) {
+      @case ('loading') {
+        <div class="skeletons" aria-hidden="true">
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+        </div>
+      }
+      @case ('error') {
+        <div class="state empty" role="alert">
+          <p>{{ strings().category.loadError }}</p>
+          <button type="button" class="btn btn--filled" (click)="retry()">{{ strings().category.retry }}</button>
+        </div>
+      }
+      @default {
+        <section class="head-card" aria-labelledby="head-title">
+          <div
+            class="ring"
+            role="progressbar"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            [style.--p]="percent()"
+            [attr.aria-valuenow]="percent()"
+            [attr.aria-label]="strings().categories.progress"
+          >
+            <b>{{ percentText() }}</b>
+          </div>
+          <div class="head-card__body head-text">
+            <h2 id="head-title" class="head-title">{{ category()?.name }}</h2>
+            <p class="body-md muted head-sub">{{ summary() }}</p>
+            @if (overdueCount() > 0) {
+              <div class="chips head-chips">
+                <span class="chip chip--overdue"><memo-icon name="clock" />{{ overdueCount() }} {{ overdueLabel() }}</span>
+              </div>
+            } @else {
+              <div class="chips head-chips">
+                <span class="chip chip--sel"><memo-icon name="check" />{{ strings().category.onTrack }}</span>
+              </div>
+            }
+          </div>
+        </section>
+
+        @if (counts().total === 0) {
+          <div class="state empty">
+            <h2 class="state-title">{{ strings().category.emptyTitle }}</h2>
+            <p class="state-text">{{ strings().category.emptyBody }}</p>
+            @if (category(); as c) {
+              <a class="btn btn--filled" [routerLink]="['/c', c.id, 'i', 'new']">{{ strings().category.addItem }}</a>
+            }
+          </div>
+        } @else {
+          <label class="search searchbar">
+            <memo-icon name="search" />
+            <input
+              class="search-input"
+              type="search"
+              autocomplete="off"
+              [attr.aria-label]="strings().category.searchLabel"
+              [placeholder]="strings().category.searchPlaceholder"
+              [value]="query()"
+              (input)="onSearch($event)"
+            />
+          </label>
+          <div class="fchips" role="group" [attr.aria-label]="strings().category.filtersLabel">
+            @for (c of chips(); track c.value) {
+              <button type="button" class="fchip" [attr.aria-pressed]="filter() === c.value" (click)="selectFilter(c.value)">
+                {{ c.label }}
+              </button>
+            }
+          </div>
+          @if (openItems().length === 0 && doneItems().length === 0) {
+            <div class="empty no-matches"><p>{{ strings().category.noMatches }}</p></div>
+          }
+          @if (openItems().length > 0) {
+            <section aria-labelledby="open-title">
+              <h2 id="open-title" class="label-lg section-label">{{ strings().category.openTitle }} <span class="section-count">{{ openItems().length }}</span></h2>
+              <ul class="list">
+                @for (i of openItems(); track i.id) {
+                  <li class="row item">
+                    <button type="button" class="tap toggle" [attr.aria-pressed]="i.done" [attr.aria-label]="i.title" (click)="toggle(i)"></button>
+                    <span class="check" aria-hidden="true"><memo-icon name="check" /></span>
+                    <span class="row__body">
+                      <span class="row__title title-md row-title">{{ i.title }}</span>
+                      @if (i.description) {
+                        <br /><span class="row__sub row-desc">{{ i.description }}</span>
+                      }
+                      @if (i.deadline !== undefined || i.priority === 'high') {
+                        <span class="chips">
+                          @if (i.deadline !== undefined) {
+                            <span class="chip row-chip" [class.chip--overdue]="overdue(i)" [class.overdue]="overdue(i)"
+                              ><memo-icon name="clock" />@if (overdue(i)) {
+                                {{ strings().category.overdueChip + ' · ' }}
+                              }
+                              {{ deadlineText(i.deadline) }}</span
+                            >
+                          }
+                          @if (i.priority === 'high') {
+                            <span class="chip chip--high row-chip high"><memo-icon name="flag" />{{ strings().category.highChip }}</span>
+                          }
+                        </span>
+                      }
+                    </span>
+                    <span class="row__trail"><ng-container *ngTemplateOutlet="edit; context: { $implicit: i }" /></span>
+                  </li>
+                }
+              </ul>
+            </section>
+          }
+          @if (doneItems().length > 0) {
+            <section aria-labelledby="done-title">
+              <h2 id="done-title" class="label-lg section-label section-label--done">{{ category()?.stateLabel }} <span class="section-count">{{ doneItems().length }}</span></h2>
+              <ul class="list">
+                @for (i of doneItems(); track i.id) {
+                  <li class="row item is-done">
+                    <button type="button" class="tap toggle" [attr.aria-pressed]="i.done" [attr.aria-label]="i.title" (click)="toggle(i)"></button>
+                    <span class="check" aria-hidden="true"><memo-icon name="check" /></span>
+                    <span class="row__body">
+                      <span class="row__title title-md row-title">{{ i.title }}</span>
+                      @if (i.description) {
+                        <br /><span class="row__sub row-desc">{{ i.description }}</span>
+                      }
+                      @if (i.deadline !== undefined || i.priority === 'high') {
+                        <span class="chips">
+                          @if (i.deadline !== undefined) {
+                            <span class="chip row-chip"><memo-icon name="clock" />{{ deadlineText(i.deadline) }}</span>
+                          }
+                          @if (i.priority === 'high') {
+                            <span class="chip chip--high row-chip high"><memo-icon name="flag" />{{ strings().category.highChip }}</span>
+                          }
+                        </span>
+                      }
+                    </span>
+                    <span class="row__trail"><ng-container *ngTemplateOutlet="edit; context: { $implicit: i }" /></span>
+                  </li>
+                }
+              </ul>
+            </section>
+          }
+          @if (category(); as c) {
+            <a class="fab" [routerLink]="['/c', c.id, 'i', 'new']" [attr.aria-label]="strings().category.addItem">
+              <memo-icon name="add" />{{ strings().category.addItem }}
+            </a>
+          }
+        }
+        @if (sortOpen()) {
+          <memo-sort-sheet
+            [heading]="strings().category.sortTitle"
+            [closeLabel]="strings().category.sortClose"
+            [options]="sortOptions()"
+            [selected]="sort()"
+            (chosen)="selectSort($event)"
+            (closed)="sortOpen.set(false)"
+          />
+        }
+      }
+    }
+  </div>
+</div>
+
+<ng-template #edit let-i>
+  <a
+    class="icon-btn edit"
+    [routerLink]="['/c', i.categoryId, 'i', i.id]"
+    [attr.aria-label]="strings().category.editItem + ': ' + i.title"
+  >
+    <memo-icon name="edit" />
+  </a>
+</ng-template>

@@ -1,0 +1,52 @@
+:host {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+@media (min-width: 768px) {
+  :host {
+    align-items: center;
+  }
+}
+.scrim {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  background: var(--scrim);
+}
+/* Same look as the mockup's <dialog class="sheet"> (global .sheet supplies size, radius and rows) */
+.sheet {
+  position: relative;
+  box-sizing: border-box;
+  margin: 0;
+  background: var(--surface-container-high);
+  color: var(--on-surface);
+  box-shadow: var(--shadow-3);
+}
+@media (min-width: 768px) {
+  .sheet {
+    margin: auto;
+  }
+}
+.options {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.option {
+  background: none;
+  border: 0;
+  font: inherit;
+  color: var(--on-surface);
+}
+.option[aria-pressed='true'] {
+  font-weight: 500;
+}
+.close {
+  display: flex;
+  margin: 8px 24px 0 auto;
+}

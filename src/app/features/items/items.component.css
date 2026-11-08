@@ -1,0 +1,94 @@
+:host {
+  display: block;
+}
+.appbar--flush {
+  margin: 0 calc(var(--s4) * -1);
+}
+@media (min-width: 768px) {
+  .appbar--flush {
+    margin: 0 calc(var(--s5) * -1);
+  }
+}
+@media (min-width: 1024px) {
+  .appbar--flush {
+    margin: 0;
+  }
+}
+.name {
+  overflow-wrap: anywhere;
+}
+.menu-wrap {
+  position: relative;
+}
+.menu {
+  position: absolute;
+  right: 0;
+  top: 52px;
+  min-width: 240px;
+  padding: 8px 0;
+  background: var(--surface-container);
+  border-radius: var(--r-xs);
+  box-shadow: var(--shadow-2);
+  z-index: 20;
+}
+.entry {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: 48px;
+  padding: 0 16px;
+  color: var(--on-surface);
+  text-decoration: none;
+}
+.entry:hover {
+  background: color-mix(in oklab, var(--on-surface) 8%, transparent);
+}
+.head-card {
+  margin-bottom: 0;
+}
+.head-title {
+  overflow-wrap: anywhere;
+}
+.head-sub {
+  margin: 2px 0 8px;
+}
+.head-chips {
+  margin: 0;
+}
+.searchbar {
+  margin-top: 12px;
+}
+.section-label {
+  padding-top: 8px;
+}
+.section-label--done {
+  color: var(--on-surface-variant);
+}
+.section-count::before {
+  content: '· ';
+}
+.row-title,
+.row__sub {
+  overflow-wrap: anywhere;
+}
+.pane-link.selected {
+  background: var(--secondary-container);
+  color: var(--on-secondary-container);
+}
+.state {
+  padding: 32px 16px;
+}
+.state .btn {
+  margin-top: 16px;
+}
+.skeletons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+.skeleton {
+  height: 72px;
+  border-radius: var(--r-lg);
+  background: var(--surface-container);
+}

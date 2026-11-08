@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>MemoIt — Settings</title>
+<link rel="stylesheet" href="assets/m3.css">
+<script src="assets/app.js"></script>
+</head>
+<body data-nav="settings">
+<div class="shell">
+  <nav id="rail"></nav>
+  <main class="shell__main">
+    <header class="appbar"><div class="appbar__row"><h1 class="appbar__title">Settings</h1></div></header>
+    <div class="shell__content shell__content--wide">
+
+      <section class="head-card" style="margin-top:8px">
+        <span class="avatar avatar--round" style="width:56px;height:56px;font-size:22px">B</span>
+        <div class="head-card__body"><h2>Bob</h2><p class="body-md muted" style="margin:2px 0 0">bob@example.com</p></div>
+        <a class="btn btn--outlined" href="login.html"><script>document.write(MemoIt.icon('logout'))</script>Sign out</a>
+      </section>
+
+      <div class="cols cols--2" style="margin-top:16px">
+        <div>
+          <section class="panel" aria-labelledby="th-t">
+            <h3 id="th-t">Colour</h3>
+            <p class="body-md muted" style="margin:-8px 0 16px">Pick an accent. Surfaces, buttons and charts all follow it.</p>
+            <div class="swatches" id="swatches" role="radiogroup" aria-label="Accent colour"></div>
+
+            <h4 class="label-lg" style="margin:20px 0 12px;color:var(--on-surface-variant)">Custom hue</h4>
+            <input class="hue" id="hue" type="range" min="0" max="360" aria-label="Custom accent hue">
+          </section>
+
+          <section class="panel" aria-labelledby="ap-t">
+            <h3 id="ap-t">Appearance</h3>
+            <div class="segmented" id="scheme" role="radiogroup" aria-label="Appearance">
+              <button type="button" role="radio" data-v="light"><script>document.write(MemoIt.icon('sun'))</script>Light</button>
+              <button type="button" role="radio" data-v="dark"><script>document.write(MemoIt.icon('moon'))</script>Dark</button>
+              <button type="button" role="radio" data-v="system"><script>document.write(MemoIt.icon('auto'))</script>System</button>
+            </div>
+          </section>
+
+          <section class="panel" aria-labelledby="lg-t">
+            <h3 id="lg-t">Language</h3>
+            <div class="segmented" id="lang" role="radiogroup" aria-label="Language">
+              <button type="button" role="radio" data-v="en">English</button>
+              <button type="button" role="radio" data-v="it">Italiano</button>
+            </div>
+            <p class="body-md muted" style="margin:12px 0 0">Applies to text, dates and times.</p>
+          </section>
+
+        </div>
+
+        <aside class="sticky">
+          <section class="panel" aria-label="Live preview">
+            <h3>Live preview</h3>
+            <div class="mini" style="position:relative">
+              <div class="mini__bar"><span style="flex:1">Grocery list</span><span class="chip chip--sel" style="height:24px">6 open</span></div>
+              <div style="padding:0 8px 72px">
+                <div class="row item" style="min-height:60px;padding:8px"><span class="check"></span><span class="row__body"><span class="row__title title-md">Oat milk</span><br><span class="row__sub">2 cartons</span></span></div>
+                <div class="row item" style="min-height:60px;padding:8px"><span class="check"></span><span class="row__body"><span class="row__title title-md">Birthday candles</span><span class="chips" style="margin-top:4px"><span class="chip chip--overdue">Overdue · 18:00</span><span class="chip chip--high">High</span></span></span></div>
+                <div class="row item is-done" style="min-height:60px;padding:8px"><span class="check"><script>document.write(MemoIt.icon('check'))</script></span><span class="row__body"><span class="row__title title-md">Coffee beans</span></span></div>
+              </div>
+              <div class="mini__fab"><script>document.write(MemoIt.icon('add'))</script></div>
+              <div class="mini__nav" style="position:absolute;left:0;right:0;bottom:0"><i class="on"></i><i></i><i></i></div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin:16px 0">
+              <button class="btn btn--filled" type="button">Filled</button>
+              <button class="btn btn--tonal" type="button">Tonal</button>
+              <button class="btn btn--outlined" type="button">Outlined</button>
+            </div>
+            <div class="roles" aria-hidden="true">
+              <div style="background:var(--primary);color:var(--on-primary)">Primary</div>
+              <div style="background:var(--primary-container);color:var(--on-primary-container)">Container</div>
+              <div style="background:var(--secondary-container);color:var(--on-secondary-container)">Secondary</div>
+              <div style="background:var(--tertiary-container);color:var(--on-tertiary-container)">Tertiary</div>
+            </div>
+          </section>
+          <p class="label-md muted" style="text-align:center">MemoIt · version 0.1 (mockup)</p>
+        </aside>
+      </div>
+    </div>
+  </main>
+</div>
+<nav id="navbar"></nav>
+<div class="snackbar" id="snackbar" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  var sw = document.getElementById('swatches'), hue = document.getElementById('hue');
+  sw.innerHTML = MemoIt.ACCENTS.map(function (a) {
+    return '<button class="swatch" type="button" role="radio" data-id="' + a.id + '" aria-checked="false" aria-label="' + a.name + '">' +
+      '<span class="swatch__dot" style="background:oklch(.55 ' + a.c + ' ' + a.hue + ')">' + MemoIt.icon('check') + '</span>' + a.name + '</button>';
+  }).join('');
+
+  function sync() {
+    var t = MemoIt.theme;
+    sw.querySelectorAll('.swatch').forEach(function (b) { b.setAttribute('aria-checked', b.dataset.id === t.accent); });
+    hue.value = t.hue;
+    document.querySelectorAll('#scheme button').forEach(function (b) { b.setAttribute('aria-checked', b.dataset.v === t.scheme); });
+    document.querySelectorAll('#lang button').forEach(function (b) { b.setAttribute('aria-checked', b.dataset.v === t.lang); });
+  }
+  sw.addEventListener('click', function (e) {
+    var b = e.target.closest('.swatch'); if (!b) return;
+    var a = MemoIt.ACCENTS.find(function (x) { return x.id === b.dataset.id; });
+    MemoIt.setTheme({ accent: a.id, hue: a.hue, c: a.c }); sync();
+  });
+  hue.addEventListener('input', function () { MemoIt.setTheme({ accent: 'custom', hue: +hue.value, c: 0.16 }); sync(); });
+  document.getElementById('scheme').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return; MemoIt.setTheme({ scheme: b.dataset.v }); sync();
+  });
+  document.getElementById('lang').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return; MemoIt.setTheme({ lang: b.dataset.v }); sync();
+    MemoIt.snack(b.dataset.v === 'it' ? 'Lingua: Italiano (mockup: testi non tradotti)' : 'Language: English');
+  });
+  sync();
+})();
+</script>
+</body>
+</html>

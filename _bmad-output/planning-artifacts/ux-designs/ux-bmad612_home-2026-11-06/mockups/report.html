@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>MemoIt — Report</title>
+<link rel="stylesheet" href="assets/m3.css">
+<script src="assets/app.js"></script>
+</head>
+<body data-nav="report">
+<div class="shell">
+  <nav id="rail"></nav>
+  <main class="shell__main">
+    <header class="appbar"><div class="appbar__row"><h1 class="appbar__title">Report</h1></div></header>
+    <div class="shell__content shell__content--wide">
+
+      <div style="display:grid;gap:12px 16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));align-items:center;padding:8px 0 16px">
+        <div class="field" style="margin:0"><label for="cat">Category</label>
+          <select id="cat"><option>Weight</option><option>Books to buy</option></select>
+        </div>
+        <div class="segmented" role="radiogroup" aria-label="Aggregation" id="agg">
+          <button type="button" role="radio" aria-checked="false">Weekly</button>
+          <button type="button" role="radio" aria-checked="true">Monthly</button>
+        </div>
+      </div>
+
+      <section class="hero" aria-label="Latest value" style="margin-bottom:16px">
+        <div class="hero__eyebrow">Weight · latest</div>
+        <div class="hero__big"><b>74.2</b><span class="title-lg">kg</span></div>
+        <div class="hero__stats">
+          <div class="hero__stat"><b>−2.4</b><span>Change</span></div>
+          <div class="hero__stat"><b>75.1</b><span>Average</span></div>
+          <div class="hero__stat"><b>74.2</b><span>Lowest</span></div>
+        </div>
+      </section>
+
+      <div class="fchips" role="group" aria-label="Range" id="range">
+        <button class="fchip" type="button" aria-pressed="false">3 months</button>
+        <button class="fchip" type="button" aria-pressed="true">6 months</button>
+        <button class="fchip" type="button" aria-pressed="false">1 year</button>
+        <button class="fchip" type="button" aria-pressed="false">All</button>
+      </div>
+
+      <div class="cols">
+        <section class="panel" style="padding-bottom:12px" aria-labelledby="c1">
+          <h3 id="c1">Trend</h3>
+          <svg class="chart" viewBox="0 0 600 240" style="height:auto;aspect-ratio:600/240" role="img" aria-label="Weight per month: 76.6 in June down to 74.2 in November">
+            <defs><linearGradient id="g" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="var(--primary)" stop-opacity=".28"/><stop offset="1" stop-color="var(--primary)" stop-opacity="0"/></linearGradient></defs>
+            <g class="grid"><line x1="40" x2="590" y1="30" y2="30"/><line x1="40" x2="590" y1="85" y2="85"/><line x1="40" x2="590" y1="140" y2="140"/><line x1="40" x2="590" y1="195" y2="195"/></g>
+            <g class="axis"><text x="6" y="34">77</text><text x="6" y="89">76</text><text x="6" y="144">75</text><text x="6" y="199">74</text>
+              <text x="58" y="224">Jun</text><text x="148" y="224">Jul</text><text x="238" y="224">Aug</text><text x="328" y="224">Sep</text><text x="418" y="224">Oct</text><text x="508" y="224">Nov</text></g>
+            <path d="M70 52 L160 80 L250 96 L340 118 L430 140 L520 164 L520 195 L70 195Z" fill="url(#g)"/>
+            <path class="line" d="M70 52 L160 80 L250 96 L340 118 L430 140 L520 164"/>
+            <g class="dot"><circle cx="70" cy="52" r="5"/><circle cx="160" cy="80" r="5"/><circle cx="250" cy="96" r="5"/><circle cx="340" cy="118" r="5"/><circle cx="430" cy="140" r="5"/><circle cx="520" cy="164" r="7" style="fill:var(--primary)"/></g>
+            <g><rect x="470" y="112" width="100" height="30" rx="8" fill="var(--inverse-surface)"/><text x="520" y="132" text-anchor="middle" font-size="13" font-weight="500" fill="var(--inverse-on-surface)" font-family="var(--font)">74.2 kg · Nov</text></g>
+          </svg>
+          <p class="body-md muted" style="margin:4px 0 12px">Plotted by deadline, or by creation date when there is none.</p>
+          <a class="btn btn--tonal" href="items.html?c=weight">Open Weight list</a>
+        </section>
+      </div>
+
+      <!-- Empty state: shown when no category is Reportable -->
+      <div class="empty" hidden id="empty">
+        <div class="empty__art"><script>document.write(MemoIt.icon('chart'))</script></div>
+        <h2>No report yet</h2>
+        <p>Mark a category as Reportable to track its values here.</p>
+      </div>
+    </div>
+  </main>
+</div>
+<nav id="navbar"></nav>
+<script>
+  document.getElementById('agg').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    this.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-checked', x === b); });
+  });
+  document.getElementById('range').addEventListener('click', function (e) {
+    var b = e.target.closest('.fchip'); if (!b) return;
+    this.querySelectorAll('.fchip').forEach(function (x) { x.setAttribute('aria-pressed', x === b); });
+  });
+</script>
+</body>
+</html>

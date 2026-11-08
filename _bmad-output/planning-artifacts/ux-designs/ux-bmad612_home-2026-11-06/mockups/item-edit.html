@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>MemoIt — Edit item</title>
+<link rel="stylesheet" href="assets/m3.css">
+<script src="assets/app.js"></script>
+</head>
+<body data-nav="categories">
+<div class="shell">
+  <nav id="rail"></nav>
+  <main class="shell__main" style="padding-bottom:32px">
+    <div class="shell__content shell__content--wide">
+      <header class="appbar" style="margin:0 calc(var(--s4) * -1)">
+        <div class="appbar__row">
+          <a class="icon-btn" href="javascript:history.back()" aria-label="Close"><script>document.write(MemoIt.icon('close'))</script></a>
+          <h1 class="appbar__title" id="h">Edit item</h1>
+          <a class="btn btn--filled" href="javascript:history.back()" style="margin-right:8px">Save</a>
+        </div>
+      </header>
+
+      <div class="cols cols--2" style="padding-top:8px">
+        <div>
+          <section class="panel" aria-labelledby="p1">
+            <h3 id="p1">Details</h3>
+            <div class="field">
+              <label for="t">Title</label>
+              <input id="t" value="Birthday candles" required maxlength="80">
+              <div class="support">Required</div>
+            </div>
+            <div class="field" style="margin-bottom:0">
+              <label for="d">Description</label>
+              <textarea id="d">Today before 18:00. Blue ones if they have them.</textarea>
+            </div>
+          </section>
+
+          <section class="panel" aria-labelledby="p2">
+            <h3 id="p2">Priority</h3>
+            <div class="tiles" role="radiogroup" aria-label="Priority" id="prio">
+              <button class="tile" type="button" role="radio" data-v="L" aria-checked="false"><script>document.write(MemoIt.icon('flag'))</script>Low</button>
+              <button class="tile" type="button" role="radio" data-v="M" aria-checked="false"><script>document.write(MemoIt.icon('flag'))</script>Medium</button>
+              <button class="tile" type="button" role="radio" data-v="H" aria-checked="true"><script>document.write(MemoIt.icon('flag'))</script>High</button>
+            </div>
+          </section>
+
+          <section class="panel" aria-labelledby="p3">
+            <h3 id="p3">When</h3>
+            <div class="quick" role="group" aria-label="Quick deadline" id="quick">
+              <button class="fchip" type="button" data-d="2026-11-06">Today</button>
+              <button class="fchip" type="button" data-d="2026-11-07">Tomorrow</button>
+              <button class="fchip" type="button" data-d="2026-11-13">Next week</button>
+              <button class="fchip" type="button" data-d="">No deadline</button>
+            </div>
+            <div style="display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:12px">
+              <div class="field"><label for="dd">Date</label><input id="dd" type="date" value="2026-11-06"></div>
+              <div class="field"><label for="dt">Time</label><input id="dt" type="time" value="18:00"></div>
+            </div>
+            <p class="body-md muted" style="margin:0">You will see an alert in the app when the deadline arrives.</p>
+          </section>
+
+          <!-- Only for Reportable categories (e.g. Weight): item-edit.html?c=weight -->
+          <section class="panel" id="value-panel" hidden aria-labelledby="p4">
+            <h3 id="p4">Value</h3>
+            <div class="field" style="margin:0">
+              <label for="v">Number</label>
+              <input id="v" inputmode="decimal" placeholder="e.g. 74.2">
+              <div class="support">Plotted in the Report.</div>
+            </div>
+          </section>
+        </div>
+
+        <aside class="sticky">
+          <section class="panel" aria-labelledby="pv">
+            <h3 id="pv">Preview</h3>
+            <div class="card card--elevated" style="padding:4px 8px">
+              <div class="row item" style="padding:12px 8px">
+                <span class="check"></span>
+                <span class="row__body"><span class="row__title title-md" id="pv-t">Birthday candles</span><br><span class="row__sub" id="pv-s">Today before 18:00. Blue ones if they have them.</span>
+                  <span class="chips" id="pv-c"></span></span>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" aria-labelledby="p5">
+            <h3 id="p5">Category</h3>
+            <div class="field" style="margin:0">
+              <label for="cat">Category</label>
+              <input id="cat" readonly>
+            </div>
+            <hr class="divider">
+            <dl class="kv" id="meta">
+              <dt>Created</dt><dd>2 Nov, 08:14</dd>
+              <dt>Last edited</dt><dd>Today, 12:40</dd>
+            </dl>
+          </section>
+
+          <div id="del-wrap">
+            <button class="btn btn--outlined btn--danger btn--block" type="button" onclick="MemoIt.openDialog('del')">Delete item</button>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+</div>
+
+<dialog id="del" aria-labelledby="del-t">
+  <form method="dialog">
+    <h2 id="del-t">Delete this item?</h2>
+    <p>“<span id="del-n">Birthday candles</span>” will be removed for good. This can’t be undone.</p>
+    <div class="actions">
+      <button class="btn btn--text" value="cancel">Cancel</button>
+      <a class="btn btn--text btn--danger" href="items.html">Delete</a>
+    </div>
+  </form>
+</dialog>
+
+<script>
+  var q = new URLSearchParams(location.search);
+  var $ = function (id) { return document.getElementById(id); };
+  var prio = 'H';
+  $('cat').value = (MemoIt.CATEGORIES.find(function (c) { return c.id === (q.get('c') || 'grocery'); }) || MemoIt.CATEGORIES[0]).name;
+
+  function setPrio(v) {
+    prio = v;
+    document.querySelectorAll('#prio .tile').forEach(function (x) { x.setAttribute('aria-checked', x.dataset.v === v); });
+    preview();
+  }
+  function preview() {
+    $('pv-t').textContent = $('t').value || 'Untitled';
+    $('pv-s').textContent = $('d').value;
+    var chips = '';
+    if ($('dd').value) chips += '<span class="chip">' + MemoIt.icon('clock') + $('dd').value.slice(5).replace('-', '/') + ($('dt').value ? ' · ' + $('dt').value : '') + '</span>';
+    if (prio === 'H') chips += '<span class="chip chip--high">' + MemoIt.icon('flag') + 'High</span>';
+    $('pv-c').innerHTML = chips;
+  }
+  if (q.get('new')) {
+    $('h').textContent = 'New item';
+    $('t').value = ''; $('d').value = ''; $('dd').value = ''; $('dt').value = '';
+    $('del-wrap').hidden = true;
+    $('meta').innerHTML = '<dt>Created</dt><dd>Now</dd>';
+    prio = 'M';
+  }
+  if (q.get('c') === 'weight') $('value-panel').hidden = false;
+  ['t', 'd', 'dd', 'dt'].forEach(function (id) { $(id).addEventListener('input', function () { if (id === 't') $('del-n').textContent = this.value; preview(); }); });
+  $('prio').addEventListener('click', function (e) { var b = e.target.closest('.tile'); if (b) setPrio(b.dataset.v); });
+  $('quick').addEventListener('click', function (e) {
+    var b = e.target.closest('.fchip'); if (!b) return;
+    $('dd').value = b.dataset.d; if (!b.dataset.d) $('dt').value = ''; else if (!$('dt').value) $('dt').value = '09:00';
+    preview();
+  });
+  setPrio(prio);
+</script>
+</body>
+</html>

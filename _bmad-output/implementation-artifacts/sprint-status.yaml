@@ -1,0 +1,193 @@
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created, ready for development
+#   - in-progress: Developer actively working on implementation
+#   - review: Implementation complete, ready for review
+#   - done: Story completed
+
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+
+# Action Item Status:
+#   - open: Committed during a retrospective, not yet addressed
+#   - in-progress: Actively being worked on
+#   - done: Completed
+
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when its first story starts (via build's sprint sync)
+# - Stories can be worked in parallel if team capacity allows
+# - Developer typically creates the next story after the previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+# - Retrospective appends its action items to action_items; the status view surfaces open ones
+generated: 11-06-2026 21:05
+last_updated: 11-07-2026 09:55
+project: bmad612_home
+project_key: NOKEY
+tracking_system: file-system
+story_location: _bmad-output/implementation-artifacts
+development_status:
+  epic-1: done
+  1-1-angular-22-scaffold-and-firestore-rules-with-emulator-tests: done
+  1-2-sign-in-with-a-persistent-session: done
+  1-3-app-shell-responsive-navigation-and-sign-out: done
+  epic-1-retrospective: done
+
+  epic-2: done
+  2-1-create-and-list-categories: done
+  2-2-category-settings-rename-state-label-reportable: done
+  epic-2-retrospective: done
+
+  epic-3: done
+  3-1-add-an-item-and-see-the-list: done
+  3-2-edit-an-item: done
+  3-3-mark-done-with-undo: done
+  3-4-delete-an-item: done
+  3-5-clear-done-items-and-delete-a-category: done
+  3-6-search-and-filter-chips: done
+  3-7-sort-open-items-should: done
+  3-8-two-pane-items-layout: done
+  epic-3-retrospective: done
+
+  epic-4: done
+  4-1-deadline-and-priority-on-an-item: done
+  4-2-overdue-flag-due-soon-and-summary: done
+  4-3-in-app-deadline-alert: done
+  epic-4-retrospective: done
+
+  epic-5: done
+  5-1-enter-a-value: done
+  5-2-read-the-report: done
+  epic-5-retrospective: done
+
+  epic-6: done
+  6-1-choose-language: done
+  6-2-choose-theme-and-accent: done
+  epic-6-retrospective: done
+
+  epic-7: done
+  7-1-end-to-end-journeys-and-accessibility-checks: done
+  7-2-installable-app-could: done
+  epic-7-retrospective: done
+action_items:
+  - id: "epic-1-retro-item-1-keep-sprint-status-in-sync-when-a-story"
+    epic: 1
+    action: "Keep sprint-status in sync when a story finishes (1.1 stayed review after
+      spec done)"
+    owner: "dev loop"
+    status: open
+    ref: "_bmad-output/implementation-artifacts/epic-1-retro-2026-11-06.md"
+  - id: "epic-1-retro-item-2-revisit-deferred-rules-gaps-orphan-items"
+    epic: 1
+    action: "Revisit deferred rules gaps (orphan items, NaN value) in stories 3.5
+      and 5.1"
+    owner: "dev"
+    status: open
+    ref: "_bmad-output/implementation-artifacts/epic-1-retro-2026-11-06.md"
+  - id: "epic-1-retro-item-3-browser-and-a11y-pass-on-login-and-shell"
+    epic: 1
+    action: "Browser and a11y pass on login and shell in story 7.1"
+    owner: "dev"
+    status: open
+    ref: "_bmad-output/implementation-artifacts/epic-1-retro-2026-11-06.md"
+  - id: "epic-2-retro-item-4-browser-and-a11y-pass-on-category-dialog"
+    epic: 2
+    action: "Browser and a11y pass on category dialog and settings in story 7.1"
+    owner: "dev"
+    status: open
+    ref: "_bmad-output/implementation-artifacts/epic-2-retro-2026-11-06.md"
+  - id: "epic-2-retro-item-5-backend-emulator-test-and-load-timeout-w"
+    epic: 2
+    action: "Backend emulator test and load timeout when Items backend lands (3.1)"
+    owner: "dev"
+    status: open
+    ref: "_bmad-output/implementation-artifacts/epic-2-retro-2026-11-06.md"
+  - id: "epic-2-retro-item-6-decide-category-delete-cascade-and-timed"
+    epic: 2
+    action: "Decide Category delete cascade and timed-out write reconciliation before
+      3.5"
+    owner: "dev"
+    status: open
+    ref: "_bmad-output/implementation-artifacts/epic-2-retro-2026-11-06.md"
+  - id: "epic-2-retro-item-7-reconcile-epic-2-context-wording-on-fire"
+    epic: 2
+    action: "Reconcile epic-2-context wording on firebase imports"
+    owner: "dev"
+    status: open
+    ref: "_bmad-output/implementation-artifacts/epic-2-retro-2026-11-06.md"
+  - id: "epic-3-retro-item-8-close-out-stories-to-done-in-sprint-stat"
+    epic: 3
+    action: "Close out stories to done in sprint-status at the end of the loop, after
+      the epic review"
+    owner: "dev loop"
+    status: open
+    ref: "_bmad-output/implementation-artifacts/epic-3-retro-2026-11-07.md"
+  - id: "epic-3-retro-item-9-re-add-overdue-has-deadline-chips-and-de"
+    epic: 3
+    action: "Re-add Overdue/Has deadline chips and Deadline sort with tests in story
+      4.2"
+    owner: "dev"
+    status: open
+    ref: "_bmad-output/implementation-artifacts/epic-3-retro-2026-11-07.md"
+  - id: "epic-3-retro-item-10-emulator-test-of-firestoreitembackend-an"
+    epic: 3
+    action: "Emulator test of FirestoreItemBackend and server query by categoryId
+      before Category delete"
+    owner: "dev"
+    status: open
+    ref: "_bmad-output/implementation-artifacts/epic-3-retro-2026-11-07.md"
+  - id: "epic-3-retro-item-11-fold-epic-3-a11y-list-confirmdialog-sort"
+    epic: 3
+    action: "Fold Epic 3 a11y list (ConfirmDialog, sort sheet, chips, snackbar) into
+      the 7.1 pass"
+    owner: "dev"
+    status: open
+    ref: "_bmad-output/implementation-artifacts/epic-3-retro-2026-11-07.md"
+  - id: "epic-3-retro-item-12-treat-nan-value-and-priority-shape-rules"
+    epic: 3
+    action: "Treat NaN value and priority shape rules gap in story 5.1"
+    owner: "dev"
+    status: open
+    ref: "_bmad-output/implementation-artifacts/epic-3-retro-2026-11-07.md"
+  - id: "epic-6-retro-item-1-a11y-of-settings-sliders-and-swatches-in-7-1"
+    epic: 6
+    action: "Fold Settings a11y (slider aria-valuetext and visible value, swatch labels)
+      into the 7.1 pass"
+    owner: "dev"
+    status: open
+    ref: "_bmad-output/implementation-artifacts/epic-6-retro-2026-11-07.md"
+  - id: "epic-6-retro-item-2-emulator-test-of-firestorepreferencesbackend"
+    epic: 6
+    action: "Emulator test of FirestorePreferencesBackend load/save (rules already
+      tested with toPrefsDoc output)"
+    owner: "dev"
+    status: open
+    ref: "_bmad-output/implementation-artifacts/epic-6-retro-2026-11-07.md"
+  - id: "epic-7-retro-item-15-decide-whether-to-wire-test-e2e-into-the"
+    epic: 7
+    action: "Decide whether to wire test:e2e into the deploy gate or a CI job before
+      any real deploy"
+    owner: "Bob"
+    status: open
+    ref: "C:/Users/Roberto Sidoti/Desktop/dev/claude/MemoIt/_bmad-output/implementation-artifacts/epic-7-retro-2026-11-07.md"
+  - id: "epic-7-retro-item-16-widen-the-a11y-floor-tests-sort-sheet-cl"
+    epic: 7
+    action: "Widen the a11y floor tests (sort sheet, Clear done dialog, edit item,
+      login, empty and error states)"
+    owner: "Bob"
+    status: open
+    ref: "C:/Users/Roberto Sidoti/Desktop/dev/claude/MemoIt/_bmad-output/implementation-artifacts/epic-7-retro-2026-11-07.md"
+  - id: "epic-7-retro-item-17-make-theme-color-follow-the-scheme-and-a"
+    epic: 7
+    action: "Make theme-color follow the scheme and accent"
+    owner: "Bob"
+    status: open
+    ref: "C:/Users/Roberto Sidoti/Desktop/dev/claude/MemoIt/_bmad-output/implementation-artifacts/epic-7-retro-2026-11-07.md"

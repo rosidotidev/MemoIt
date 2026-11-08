@@ -1,0 +1,155 @@
+<header class="appbar">
+  <div class="appbar__row">
+    <h1 class="appbar__title title">{{ strings().appName }}</h1>
+    <a class="icon-btn" routerLink="/settings" [attr.aria-label]="strings().categories.themeSettings"
+      ><memo-icon name="palette"
+    /></a>
+    <memo-account-menu />
+  </div>
+</header>
+
+<div class="shell__content shell__content--wide">
+  <section class="home">
+    @switch (status()) {
+      @case ('loading') {
+        <div class="skeletons" aria-hidden="true">
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+        </div>
+      }
+      @case ('error') {
+        <div class="empty state" role="alert">
+          <p class="state-text" style="margin: 0 0 24px">{{ strings().categories.loadError }}</p>
+          <button type="button" class="btn btn--filled filled" (click)="retry()">{{ strings().categories.retry }}</button>
+        </div>
+      }
+      @default {
+        @if (!hasAny()) {
+          <div class="empty state">
+            <div class="empty__art"><memo-icon name="folder" /></div>
+            <h2 class="state-title">{{ strings().categories.emptyTitle }}</h2>
+            <p class="state-text" style="margin: 0 0 24px">{{ strings().categories.emptyBody }}</p>
+            <button type="button" class="btn btn--filled filled" (click)="openDialog()">{{ strings().categories.newCategory }}</button>
+          </div>
+        } @else {
+          <div style="height: 8px"></div>
+
+          <label class="search">
+            <memo-icon name="search" />
+            <input
+              type="search"
+              autocomplete="off"
+              [attr.aria-label]="strings().categories.searchLabel"
+              [placeholder]="strings().categories.searchPlaceholder"
+              [value]="query()"
+              (input)="onSearch($event)"
+            />
+          </label>
+
+          @if (itemsReady()) {
+            <section class="hero" [attr.aria-label]="strings().categories.summaryLabel">
+              <div class="hero__eyebrow">{{ strings().categories.heroEyebrow }}</div>
+              <div class="hero__big">
+                <b class="stat-value">{{ summary().overdue }}</b
+                ><span class="title-lg stat-label">{{ strings().categories.heroOverdueUnit }}</span>
+              </div>
+              <div class="hero__stats">
+                <div class="hero__stat">
+                  <b class="stat-value">{{ summary().open }}</b><span>{{ strings().categories.summaryOpen }}</span>
+                </div>
+                <div class="hero__stat">
+                  <b class="stat-value">{{ summary().dueThisWeek }}</b><span>{{ strings().categories.summaryWeek }}</span>
+                </div>
+                <div class="hero__stat">
+                  <b class="stat-value">{{ summary().categories }}</b><span>{{ strings().categories.summaryCategories }}</span>
+                </div>
+              </div>
+            </section>
+          }
+
+          @if (strip().length > 0) {
+            <section class="due-soon" aria-labelledby="due-soon-title">
+              <div class="sec-h"><h2 id="due-soon-title">{{ strings().categories.dueSoonTitle }}</h2></div>
+              <ul class="hscroll strip" style="list-style: none; margin-bottom: 0">
+                @for (s of strip(); track s.id) {
+                  <li>
+                    <a class="due-card soon-card" [class.is-overdue]="s.overdue" [routerLink]="['/c', s.categoryId]">
+                      <span class="chips" style="margin: 0">
+                        <span class="chip" [class.chip--overdue]="s.overdue"
+                          ><memo-icon name="clock" />@if (s.overdue) {
+                            {{ strings().categories.dueSoonOverdue + ' · ' }}
+                          }
+                          {{ s.when }}</span
+                        >
+                        @if (s.high) {
+                          <span class="chip chip--high"><memo-icon name="flag" />{{ strings().category.highChip }}</span>
+                        }
+                      </span>
+                      <span class="t title-md soon-title">{{ s.title }}</span>
+                      <span class="cn">{{ s.category }}</span>
+                    </a>
+                  </li>
+                }
+              </ul>
+            </section>
+          }
+
+          <div class="sec-h">
+            <h2>{{ strings().categories.title }}</h2>
+            <span class="label-lg muted">{{ countLabel() }}</span>
+          </div>
+          @if (cards().length === 0) {
+            <div class="empty" style="padding: 32px 16px">
+              <p class="state-text" style="margin: 0">{{ strings().categories.noMatches }}</p>
+            </div>
+          } @else {
+            <ul class="cards">
+              @for (c of cards(); track c.id) {
+                <li>
+                  <a class="cat-card card" [routerLink]="['/c', c.id]">
+                    <span class="cat-card__top">
+                      <span class="avatar" aria-hidden="true">{{ c.name.charAt(0).toUpperCase() }}</span>
+                      <span class="row__body">
+                        <span class="title-md name" style="display: block">{{ c.name }}</span>
+                        <span class="row__sub">{{ sub(c) }}</span>
+                      </span>
+                      @if (c.open > 0) {
+                        <span class="badge" [attr.aria-label]="c.open + ' ' + strings().categories.openBadge">{{ c.open }}</span>
+                      }
+                    </span>
+                    <span
+                      class="progress bar"
+                      role="progressbar"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                      [attr.aria-valuenow]="c.percent"
+                      [attr.aria-label]="strings().categories.progress"
+                    >
+                      <i class="fill" [style.width.%]="c.percent"></i>
+                    </span>
+                    <span class="cat-card__meta">
+                      <span>{{ doneOf(c) }}</span>
+                      @if (c.late) {
+                        <span class="chip chip--overdue" style="height: 22px">{{ strings().categories.dueSoonOverdue }}</span>
+                      } @else {
+                        <span>{{ c.percent + '%' }}</span>
+                      }
+                    </span>
+                  </a>
+                </li>
+              }
+            </ul>
+          }
+          <button type="button" class="fab" [attr.aria-label]="strings().categories.newCategory" (click)="openDialog()">
+            <memo-icon name="add" />{{ strings().categories.newCategory }}
+          </button>
+        }
+      }
+    }
+
+    @if (dialogOpen()) {
+      <memo-new-category-dialog (closed)="closeDialog()" />
+    }
+  </section>
+</div>

@@ -1,0 +1,57 @@
+<button type="button" class="scrim" tabindex="-1" [attr.aria-label]="strings().categories.cancel" (click)="cancel()"></button>
+<div
+  class="dialog"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="new-category-title"
+  (keydown)="onKeydown($event)"
+>
+  <form (submit)="submit($event)" novalidate>
+    <h2 id="new-category-title" class="heading">{{ strings().categories.dialogTitle }}</h2>
+    <div class="field" style="margin-top: 8px">
+      <label for="new-category-name">{{ strings().categories.nameLabel }}</label>
+      <input
+        #nameInput
+        id="new-category-name"
+        type="text"
+        autocomplete="off"
+        [placeholder]="strings().categories.namePlaceholder"
+        [attr.maxlength]="nameMax"
+        [value]="name()"
+        [attr.aria-invalid]="error() ? 'true' : null"
+        [attr.aria-describedby]="error() ? 'new-category-error' : null"
+        (input)="onInput($event)"
+      />
+      <div class="support">{{ strings().categories.nameHint }}</div>
+    </div>
+    <div class="row switch-row">
+      <span class="row__body">
+        <span id="new-category-reportable" class="title-md">{{ strings().categorySettings.reportableLabel }}</span><br />
+        <span class="row__sub">{{ strings().categorySettings.reportableHint }}</span>
+      </span>
+      <label class="switch">
+        <input
+          type="checkbox"
+          role="switch"
+          [checked]="reportable()"
+          aria-labelledby="new-category-reportable"
+          (change)="reportable.set(!reportable())"
+        />
+        <span></span>
+      </label>
+    </div>
+    <p id="new-category-error" class="error" role="alert">
+      @if (error(); as e) {
+        {{ strings().categories.errors[e] }}
+      }
+    </p>
+    <div class="actions">
+      <button type="button" class="btn btn--text text" [disabled]="busy()" (click)="cancel()">
+        {{ strings().categories.cancel }}
+      </button>
+      <button type="submit" class="btn btn--text filled" [disabled]="busy()">
+        {{ busy() ? strings().categories.creating : strings().categories.create }}
+      </button>
+    </div>
+  </form>
+</div>

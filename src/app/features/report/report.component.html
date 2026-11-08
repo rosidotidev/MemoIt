@@ -1,0 +1,108 @@
+<header class="appbar">
+  <div class="appbar__row"><h1 class="appbar__title">{{ strings().report.title }}</h1><memo-account-menu /></div>
+</header>
+<div class="shell__content shell__content--wide">
+  @if (itemStatus() === 'error') {
+    <div class="state" role="alert">
+      <p>{{ strings().report.loadError }}</p>
+      <button type="button" class="btn btn--tonal" (click)="retry()">{{ strings().report.retry }}</button>
+    </div>
+  } @else if (itemStatus() === 'loading') {
+    <div class="skeleton" aria-hidden="true"></div>
+  } @else if (!category()) {
+    <div class="empty">
+      <div class="empty__art"><memo-icon name="chart" /></div>
+      <h2>{{ strings().report.title }}</h2>
+      <p>{{ strings().report.emptyNoCategory }}</p>
+      <a class="btn btn--tonal" routerLink="/categories">{{ strings().report.toCategories }}</a>
+    </div>
+  } @else {
+    <div class="toolbar">
+      @if (reportable().length > 0) {
+        <div class="field">
+          <label for="report-cat">{{ strings().report.categoryLabel }}</label>
+          <select id="report-cat" (change)="selectCategory($any($event.target).value)">
+            @for (c of reportable(); track c.id) {
+              <option [value]="c.id" [selected]="c.id === category()!.id">{{ c.name }}</option>
+            }
+          </select>
+        </div>
+      } @else {
+        <p class="cat-name title-md">{{ category()!.name }}</p>
+      }
+      <div class="segmented" role="radiogroup" [attr.aria-label]="strings().report.aggregationLabel">
+        @for (a of aggregations; track a) {
+          <button
+            type="button"
+            role="radio"
+            [attr.aria-checked]="aggregation() === a"
+            [attr.aria-pressed]="aggregation() === a"
+            (click)="selectAggregation(a)"
+          >
+            {{ a === 'week' ? strings().report.weekly : strings().report.monthly }}
+          </button>
+        }
+      </div>
+    </div>
+
+    @if (hero(); as h) {
+      <section class="hero summary" [attr.aria-label]="strings().report.summaryLabel">
+        <div class="hero__eyebrow">{{ eyebrow() }}</div>
+        <div class="hero__big"><b>{{ h.latest }}</b><span class="title-lg">{{ h.when }}</span></div>
+        <div class="hero__stats">
+          @for (s of h.stats; track s.label) {
+            <div class="hero__stat">
+              <b>{{ s.value }}</b><span>{{ s.label }}</span>
+            </div>
+          }
+        </div>
+      </section>
+    }
+
+    <div class="fchips chips" role="group" [attr.aria-label]="strings().report.periodLabel">
+      @for (p of periods; track p) {
+        <button type="button" class="fchip" [attr.aria-pressed]="period() === p" (click)="selectPeriod(p)">
+          {{ periodLabel(p) }}
+        </button>
+      }
+    </div>
+
+    @if (!hasValues()) {
+      <div class="empty">
+        <div class="empty__art"><memo-icon name="chart" /></div>
+        <p>{{ strings().report.emptyNoValues }}</p>
+        <a class="btn btn--tonal" routerLink="/categories">{{ strings().report.toCategories }}</a>
+      </div>
+    } @else {
+      <div class="cols">
+        <section class="panel" aria-labelledby="report-trend">
+          <h3 id="report-trend">{{ strings().report.trend }}</h3>
+          <div class="chart-box">
+            <canvas baseChart role="img" [attr.aria-label]="chartLabel()" [type]="'line'" [data]="chart().data" [options]="chart().options"></canvas>
+          </div>
+          <p class="body-md muted note">{{ strings().report.chartNote }}</p>
+          <details class="table-wrap">
+            <summary>{{ strings().report.tableToggle }}</summary>
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">{{ strings().report.tableDate }}</th>
+                  <th scope="col">{{ strings().report.tableValue }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (r of rows(); track $index) {
+                  <tr>
+                    <td>{{ r.label }}</td>
+                    <td>{{ r.value ?? strings().report.gap }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </details>
+          <a class="btn btn--tonal" [routerLink]="['/c', category()!.id]">{{ openListLabel() }}</a>
+        </section>
+      </div>
+    }
+  }
+</div>

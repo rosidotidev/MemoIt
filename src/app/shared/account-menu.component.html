@@ -1,0 +1,28 @@
+<button
+  #avatar
+  type="button"
+  class="acct"
+  aria-haspopup="menu"
+  [attr.aria-controls]="open() ? 'account-menu' : null"
+  [attr.aria-label]="strings().account.avatarLabel"
+  [attr.aria-expanded]="open()"
+  (click)="toggle()"
+>
+  {{ initial() }}
+</button>
+@if (open()) {
+  <div id="account-menu" class="menu" role="group" [attr.aria-label]="strings().account.menuLabel" [style.top.px]="top()" [style.right.px]="right()">
+    <div class="menu__head">
+      <span class="avatar avatar--round">{{ initial() }}</span>
+      <span>
+        <b class="title-md name">{{ name() }}</b>
+        <span class="row__sub email">{{ email() }}</span>
+      </span>
+    </div>
+    <hr class="divider" />
+    <a class="menu__item entry" routerLink="/settings" (click)="close()"><memo-icon name="tune" />{{ strings().nav.settings }}</a>
+    <button type="button" class="menu__item menu__item--out entry" (click)="choseSignOut()">
+      <memo-icon name="logout" />{{ strings().nav.signOut }}
+    </button>
+  </div>
+}

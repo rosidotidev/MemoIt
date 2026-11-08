@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<title>MemoIt — Screen gallery</title>
+<link rel="stylesheet" href="assets/m3.css">
+<script src="assets/app.js"></script>
+</head>
+<body>
+<header style="padding:32px 24px 0;max-width:1400px;margin:0 auto">
+  <h1 class="display" style="margin:0 0 8px">MemoIt screens</h1>
+  <p class="muted" style="margin:0 0 16px">All screens at phone size. Open any of them full-window and resize to see tablet (≥768px) and desktop (≥1200px) layouts. Change the accent in Settings and every screen follows.</p>
+  <div class="segmented" id="scheme" style="max-width:320px">
+    <button type="button" data-v="light">Light</button><button type="button" data-v="dark">Dark</button><button type="button" data-v="system">System</button>
+  </div>
+</header>
+<main class="gallery" id="g"></main>
+<script>
+  var S = [
+    ['login.html', '1 · Login'], ['categories.html', '2 · Categories (home)'], ['categories.html?empty=1', '2b · Categories, empty'],
+    ['items.html?c=grocery', '3 · Items'], ['item-edit.html', '4 · Edit item'], ['item-edit.html?new=1', '4b · New item'],
+    ['category-settings.html?c=grocery', '5 · Category settings'], ['report.html', '6 · Report'], ['settings.html', '7 · Settings & theme']
+  ];
+  document.getElementById('g').innerHTML = S.map(function (s) {
+    return '<figure class="frame" style="margin:0"><figcaption class="title-md"><a href="' + s[0] + '">' + s[1] + '</a></figcaption>' +
+      '<iframe src="' + s[0] + '" title="' + s[1] + '" loading="lazy"></iframe></figure>';
+  }).join('');
+  function sync() { document.querySelectorAll('#scheme button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.v === MemoIt.theme.scheme); }); }
+  document.getElementById('scheme').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    MemoIt.setTheme({ scheme: b.dataset.v }); sync();
+    document.querySelectorAll('iframe').forEach(function (f) { f.contentWindow.location.reload(); });
+  });
+  sync();
+</script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<form class="form shell__content shell__content--wide" (submit)="save($event)" novalidate>
+  <header class="appbar">
+    <div class="appbar__row">
+      <a class="icon-btn back" [routerLink]="['/c', id()]" [attr.aria-label]="strings().categorySettings.back">
+        <memo-icon name="back" />
+      </a>
+      <h1 class="appbar__title">{{ strings().categorySettings.title }}</h1>
+      <button type="submit" class="btn btn--filled save" [disabled]="busy()">
+        {{ busy() ? strings().categorySettings.saving : strings().categorySettings.save }}
+      </button>
+      <memo-account-menu />
+    </div>
+  </header>
+
+  <section class="head-card head">
+    <span class="avatar head-avatar" aria-hidden="true">{{ initial() }}</span>
+    <div class="head-card__body">
+      <h2>{{ name().trim() || '…' }}</h2>
+      <p class="body-md muted head-sub">{{ summary() }}</p>
+    </div>
+  </section>
+
+  <div class="cols cols--2 body">
+    <div>
+      <section class="panel" aria-labelledby="cs-general-title">
+        <h3 id="cs-general-title">{{ strings().categorySettings.generalTitle }}</h3>
+        <div class="field">
+          <label for="cs-name">{{ strings().categorySettings.nameLabel }}</label>
+          <input
+            id="cs-name"
+            type="text"
+            autocomplete="off"
+            [attr.maxlength]="nameMax"
+            [value]="name()"
+            [attr.aria-invalid]="nameError() ? 'true' : null"
+            [attr.aria-describedby]="nameError() ? 'cs-name-error' : null"
+            (input)="onName($event)"
+          />
+          <div id="cs-name-error" class="support error" role="alert">
+            @if (nameError(); as e) {
+              {{ strings().categorySettings.errors[e] }}
+            }
+          </div>
+        </div>
+        <div class="field label-field">
+          <label for="cs-label">{{ strings().categorySettings.stateLabelLabel }}</label>
+          <input
+            id="cs-label"
+            type="text"
+            autocomplete="off"
+            [attr.maxlength]="labelMax"
+            [value]="stateLabel()"
+            [attr.aria-invalid]="labelError() ? 'true' : null"
+            [attr.aria-describedby]="labelError() ? 'cs-label-error cs-label-hint' : 'cs-label-hint'"
+            (input)="onLabel($event)"
+          />
+          <div id="cs-label-hint" class="support hint">{{ strings().categorySettings.stateLabelHint }}</div>
+          <div id="cs-label-error" class="support error" role="alert">
+            @if (labelError(); as e) {
+              {{ strings().categorySettings.errors[e] }}
+            }
+          </div>
+        </div>
+        <div class="chips sugg" role="group" [attr.aria-label]="strings().categorySettings.suggestionsLabel">
+          @for (s of suggestions; track s) {
+            <button type="button" class="fchip" [attr.aria-pressed]="stateLabel() === s" (click)="pick(s)">{{ s }}</button>
+          }
+        </div>
+        <div class="card card--filled preview">
+          <span class="check on"><memo-icon name="check" /></span>
+          <span class="body-md">
+            {{ previewPrefix() }}<b class="preview-chip">{{ previewLabel() }}</b>{{ previewSuffix() }}
+          </span>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="cs-report-title">
+        <h3 id="cs-report-title">{{ strings().categorySettings.reportTitle }}</h3>
+        <div class="row switch-row">
+          <span class="row__body">
+            <span id="cs-reportable-label" class="title-md">{{ strings().categorySettings.reportableLabel }}</span><br />
+            <span id="cs-reportable-hint" class="row__sub">{{ strings().categorySettings.reportableHint }}</span>
+          </span>
+          <label class="switch">
+            <input
+              type="checkbox"
+              role="switch"
+              [checked]="reportable()"
+              aria-labelledby="cs-reportable-label"
+              aria-describedby="cs-reportable-hint"
+              (change)="toggleReportable()"
+            />
+            <span></span>
+          </label>
+        </div>
+      </section>
+    </div>
+
+    <aside>
+      <section class="panel glance" aria-labelledby="cs-glance-title">
+        <h3 id="cs-glance-title">{{ strings().categorySettings.glanceTitle }}</h3>
+        <dl class="kv">
+          <dt>{{ strings().categorySettings.glanceItems }}</dt>
+          <dd>{{ counts().total }}</dd>
+          <dt>{{ strings().categorySettings.glanceOpen }}</dt>
+          <dd>{{ counts().open }}</dd>
+          <dt>{{ previewLabel() }}</dt>
+          <dd>{{ counts().done }}</dd>
+          <dt>{{ strings().categorySettings.glanceReportable }}</dt>
+          <dd>{{ reportable() ? strings().categorySettings.on : strings().categorySettings.off }}</dd>
+        </dl>
+      </section>
+
+      <section class="panel danger" aria-labelledby="cs-danger-title">
+        <h3 id="cs-danger-title">{{ strings().categorySettings.dangerTitle }}</h3>
+        <button type="button" class="row row--link danger-btn" [disabled]="busy() || working() || !itemsReady() || counts().done === 0" (click)="ask('clear')">
+          <span class="row__body">
+            <span class="title-md">{{ strings().categorySettings.clearDone }}</span><br />
+            <span class="row__sub">{{ strings().categorySettings.clearDoneHint }}</span>
+          </span>
+          <span class="row__trail"><memo-icon name="chev" /></span>
+        </button>
+        <button type="button" class="row row--link danger-btn" [disabled]="busy() || working() || !itemsReady()" (click)="ask('delete')">
+          <span class="row__body">
+            <span class="title-md del">{{ strings().categorySettings.deleteCategory }}</span><br />
+            <span class="row__sub">{{ strings().categorySettings.deleteCategoryHint }}</span>
+          </span>
+          <span class="row__trail del"><memo-icon name="del" /></span>
+        </button>
+      </section>
+    </aside>
+  </div>
+
+  <p class="error form-error" role="alert">
+    @if (formError(); as e) {
+      {{ strings().categorySettings.errors[e] }}
+    }
+  </p>
+</form>
+@if (confirming(); as kind) {
+  <memo-confirm-dialog
+    [heading]="kind === 'clear' ? strings().categorySettings.clearDoneTitle : strings().categorySettings.deleteCategoryTitle"
+    [body]="dialogBody()"
+    [confirmLabel]="
+      working()
+        ? kind === 'clear'
+          ? strings().categorySettings.clearing
+          : strings().categorySettings.deletingCategory
+        : kind === 'clear'
+          ? strings().categorySettings.clearDone
+          : strings().categorySettings.deleteCategory
+    "
+    [cancelLabel]="strings().categorySettings.cancel"
+    [busy]="working()"
+    (confirmed)="confirmDialog()"
+    (cancelled)="cancelDialog()"
+  />
+}

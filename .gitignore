@@ -1,0 +1,27 @@
+node_modules/
+dist/
+.angular/
+_bmad/render/
+
+# MemoIt
+src/environments/environment.prod.ts
+.firebase/
+.emulator-data/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+*-debug.log
+.vscode/*
+!.vscode/settings.json
+
+firestore-debug.log
+*-debug.log
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# Documentazione locale (non su GitHub)
+doc/

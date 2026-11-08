@@ -1,0 +1,55 @@
+<div class="shell" [class]="windowClass()">
+  @if (windowClass() !== 'compact') {
+    <nav class="rail" [attr.aria-label]="strings().nav.navLabel">
+      <div class="drawer__brand">
+        <div class="brand-mark" aria-hidden="true">{{ strings().appName.charAt(0) }}</div>
+        <div class="brand-name title-lg">{{ strings().appName }}</div>
+      </div>
+      <a class="dest" routerLink="/categories" routerLinkActive ariaCurrentWhenActive="page">
+        <span class="dest__pill"><memo-icon name="folder" /></span
+        ><span class="label-md">{{ strings().nav.categories }}</span>
+      </a>
+      <a class="dest" routerLink="/report" routerLinkActive ariaCurrentWhenActive="page">
+        <span class="dest__pill"><memo-icon name="chart" /></span
+        ><span class="label-md">{{ strings().nav.report }}</span>
+      </a>
+      <a class="dest" routerLink="/settings" routerLinkActive ariaCurrentWhenActive="page">
+        <span class="dest__pill"><memo-icon name="tune" /></span
+        ><span class="label-md">{{ strings().nav.settings }}</span>
+      </a>
+      <button type="button" class="dest dest--out" (click)="signOut()">
+        <span class="dest__pill"><memo-icon name="logout" /></span
+        ><span class="label-md">{{ strings().nav.signOut }}</span>
+      </button>
+    </nav>
+  }
+
+  <main class="shell__main">
+    @if (reminder.alert(); as alert) {
+      <div class="alert" role="status" aria-live="polite">
+        <button type="button" class="alert-open" (click)="openAlert(alert.categoryId, alert.itemId)">
+          <span class="alert-text">{{ alertText(alert.title) }}</span>
+          <span class="alert-cta">{{ strings().reminder.open }}</span>
+        </button>
+      </div>
+    }
+    <router-outlet />
+  </main>
+
+  @if (windowClass() === 'compact') {
+    <nav class="navbar" [attr.aria-label]="strings().nav.navLabel">
+      <a class="dest" routerLink="/categories" routerLinkActive ariaCurrentWhenActive="page">
+        <span class="dest__pill"><memo-icon name="folder" /></span
+        ><span class="label-md">{{ strings().nav.categories }}</span>
+      </a>
+      <a class="dest" routerLink="/report" routerLinkActive ariaCurrentWhenActive="page">
+        <span class="dest__pill"><memo-icon name="chart" /></span
+        ><span class="label-md">{{ strings().nav.report }}</span>
+      </a>
+      <a class="dest" routerLink="/settings" routerLinkActive ariaCurrentWhenActive="page">
+        <span class="dest__pill"><memo-icon name="tune" /></span
+        ><span class="label-md">{{ strings().nav.settings }}</span>
+      </a>
+    </nav>
+  }
+</div>

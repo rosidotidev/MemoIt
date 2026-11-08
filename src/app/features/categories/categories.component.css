@@ -1,0 +1,33 @@
+/* Layout classes come from the global src/m3.css (ported from the mockups); only local bits here. */
+.skeletons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.skeleton {
+  height: 112px;
+  border-radius: var(--r-lg);
+  background: var(--surface-container-high);
+}
+.strip > li {
+  display: block;
+}
+.soon-card.is-overdue {
+  border-color: transparent;
+}
+.state-title {
+  font-size: 24px;
+}
+
+@media (max-width: 767px) {
+  .search { height: 40px; padding: 0 12px; gap: 8px; margin-bottom: 10px; font-size: 14px; }
+  .hero { padding: 8px 10px; border-radius: var(--r-md); }
+  .hero__eyebrow { font-size: 10px; }
+  .hero__big { margin: 0 0 6px; gap: 0 6px; }
+  .hero__big b { font-size: 22px; line-height: 26px; }
+  .hero__big .stat-label { font-size: 13px; line-height: 18px; }
+  .hero__stats { gap: 4px; }
+  .hero__stat { padding: 4px 8px; border-radius: var(--r-sm); }
+  .hero__stat b { font-size: 15px; line-height: 18px; }
+  .hero__stat span { font-size: 10px; }
+}

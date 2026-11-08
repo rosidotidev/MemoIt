@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>MemoIt — Sign in</title>
+<link rel="stylesheet" href="assets/m3.css">
+<script src="assets/app.js"></script>
+</head>
+<body data-nav="">
+<div class="auth2">
+  <aside class="auth2__hero" aria-hidden="true">
+    <div class="brand-mark" style="background:rgb(255 255 255 / .2);color:#fff;margin-bottom:32px;width:56px;height:56px;font-size:28px">M</div>
+    <h2>Everything you need to remember, in one calm place.</h2>
+    <p>Notes, to-dos and wish lists, organised in your own categories.</p>
+    <ul class="auth2__feat">
+      <li><span><script>document.write(MemoIt.icon('check'))</script></span>Tick things off with a single tap</li>
+      <li><span><script>document.write(MemoIt.icon('bell'))</script></span>Reminders for what really matters</li>
+      <li><span><script>document.write(MemoIt.icon('palette'))</script></span>Make it yours with any colour</li>
+    </ul>
+  </aside>
+
+  <main class="auth2__form">
+    <form class="auth__card" action="categories.html" autocomplete="on" style="padding:0;background:none">
+      <div class="auth2__top">
+        <div class="brand-mark" aria-hidden="true">M</div>
+        <h1 class="headline" style="margin:0 0 4px">MemoIt</h1>
+        <p class="body-md" style="margin:0;opacity:.85">Your notes and lists, always in your pocket.</p>
+      </div>
+
+      <h1 class="headline" style="margin:0 0 4px" id="wb">Welcome back</h1>
+      <p class="muted body-md" style="margin:0 0 28px">Sign in to continue to your lists.</p>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" inputmode="email" autocomplete="username" value="bob@example.com" required>
+      </div>
+      <div class="field" style="position:relative">
+        <label for="pwd">Password</label>
+        <input id="pwd" name="pwd" type="password" autocomplete="current-password" value="correct horse" required style="padding-right:84px">
+        <button type="button" class="btn btn--text" style="position:absolute;right:4px;top:8px" id="show" aria-controls="pwd">Show</button>
+      </div>
+
+      <button class="btn btn--filled btn--block" type="submit">Sign in</button>
+
+      <hr class="divider" style="margin:28px 0 16px">
+      <p class="muted label-md" style="text-align:center;margin:0 0 16px">Accounts are created by the owner. No sign-up, no password reset.</p>
+      <div class="segmented" role="radiogroup" aria-label="Language" id="lang" style="max-width:240px;margin:0 auto">
+        <button type="button" role="radio" data-v="en" aria-checked="true">English</button>
+        <button type="button" role="radio" data-v="it" aria-checked="false">Italiano</button>
+      </div>
+    </form>
+  </main>
+</div>
+<div class="snackbar" id="snackbar" role="status" aria-live="polite" style="bottom:24px;left:50%"></div>
+<script>
+  if (new URLSearchParams(location.search).get('out')) MemoIt.snack('You have been signed out');
+  document.getElementById('show').addEventListener('click', function () {
+    var p = document.getElementById('pwd'), s = p.type === 'password';
+    p.type = s ? 'text' : 'password'; this.textContent = s ? 'Hide' : 'Show';
+  });
+  document.getElementById('lang').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    this.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-checked', x === b); });
+    MemoIt.setTheme({ lang: b.dataset.v });
+  });
+</script>
+</body>
+</html>
